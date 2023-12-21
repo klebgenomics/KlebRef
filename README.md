@@ -1,5 +1,5 @@
 # Genomic Analysis of Public _Klebsiella_ Reference Strains
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5525875.svg)](https://doi.org/10.5281/zenodo.5525875)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10419967.svg)](https://doi.org/10.5281/zenodo.10419967)
 
 ## Introduction
 :microscope::scientist: The purpose of this resource is to provide a genomic context to _Klebsiella_ reference strains
