@@ -45,7 +45,7 @@ To fetch the genomes, you can either download each one manually :no_good: or use
 [ATCC Genome Portal](https://github.com/ATCC-Bioinformatics/genome_portal_api) APIs to fetch them in bulk :raised_hands:.
 
 ### NCTC and BEI genomes
-First, I identified the assiciated BioProjects for both collections:
+First, I identified the associated BioProjects for both collections:
  - NCTC 3000 Sequencing project [1](1): [PRJEB6403](https://www.ncbi.nlm.nih.gov/bioproject/PRJEB6403).
  - BEI Resources [2](2): [PRJNA717739](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA717739).
 
