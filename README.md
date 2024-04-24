@@ -43,7 +43,7 @@ The associated publications of these collections are:
 🎉 **All associated metadata has also been included!** 🎉
 
 If you found this resource useful, please consider cite:
-Stanton, T. D., Wyres, K., & Kathryn, H. (2023). Genomic Analysis of Public Klebsiella Reference Strains (0.0.1) [Data set]. Zenodo. [10.5281/zenodo.1041996](https://doi.org/10.5281/zenodo.1041996).
+Stanton, T. D., Wyres, K., & Holt, K. (2023). Genomic Analysis of Public Klebsiella Reference Strains (0.0.1) [Data set]. Zenodo. [10.5281/zenodo.1041996](https://doi.org/10.5281/zenodo.1041996).
 
 # Microreact visualisation
 
