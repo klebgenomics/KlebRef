@@ -47,7 +47,7 @@ Stanton, T. D., Wyres, K., & Holt, K. (2023). Genomic Analysis of Public Klebsie
 
 # Microreact visualisation
 
-The results of this analysis can be accessed from the [Microreact project page](https://microreact.org/project/6paF6wq5kynJxzBWA4zrH7-public-klebsiella-reference-strains).
+The results of this analysis can be accessed from the [Microreact project page](https://microreact.org/project/499JCs427zQcxQMJKg5rQG-genomic-analysis-of-public-klebsiella-reference-strains).
 
 ## Interpreting the data
 
@@ -221,7 +221,7 @@ kleborate <- readr::read_tsv("reference_klebs_kleborate.tsv", show_col_types = F
 
 ## Kaptive
 
-Next, we'll use [Kaptive]((https://github.com/klebgenomics/Kaptive.git) to 
+Next, we'll use [Kaptive](https://github.com/klebgenomics/Kaptive.git) to 
 perform *in silico* K and O antigen typing. Details 
 of how to use Kaptive can be found in the [wiki](https://kaptive.readthedocs.io).
 
