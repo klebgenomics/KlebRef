@@ -94,19 +94,14 @@ title <- htmltools::div(
       klebref_logo
     ),
     htmltools::div(
-      shiny::actionButton(
-        'download', 'Download strain table', icon=shiny::icon('download'), 
-        width='225px',
-      ),
-      shiny::actionButton(
-        'download_tree', 'Download tree', icon=shiny::icon('download'), 
-        width='200px',
-      )
+      style="display: flex; flex-wrap: nowrap; align-items: center;",
+      shiny::downloadButton('table_download', 'Download strain table', width='225px'),
+      shiny::downloadButton('tree_download', 'Download tree', width='200px')
     )
   )
 )
 footer <- htmltools::div(
-  # style="width: 100%;", # Ensure it takes the full width
+  style="width: 100%;", # Ensure it takes the full width
   htmltools::div(
     style="display: flex; justify-content: space-between; align-items: center;",
     htmltools::div(
@@ -185,7 +180,8 @@ intro <- shiny::fluidRow(
     take you to their respective ordering portals and below is a summary of the
     strains you have selected.</p>'
   ),
-  shiny::tableOutput('summary')
+  shiny::tableOutput('summary') |> 
+    shinycssloaders::withSpinner(color=SPINNER_COLOR, type=SPINNER_TYPE, size=SPINNER_SIZE)
 )
 map <- shiny::column(
   6,

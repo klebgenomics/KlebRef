@@ -55,6 +55,10 @@ function(input, output, session) {
     }
     return(d)
   })
+  
+  reactive_tree <- shiny::reactive({
+    ape::drop.tip(TREE, TREE$tip.label[!TREE$tip.label %in% reactive_data()$Accession])
+  })
 
   # Outputs --------------------------------------------------------------------
   output$tbl=DT::renderDT({reactive_data()}, rownames=FALSE)
@@ -98,7 +102,7 @@ function(input, output, session) {
     if(nrow(reactive_data()) == 0){
       return(NULL)
     }
-    tree <- ape::drop.tip(TREE, TREE$tip.label[!TREE$tip.label %in% reactive_data()$Accession]) |>
+    tree <- reactive_tree() |> 
       ggtree::ggtree(ggplot2::aes(label=Strain, layout='fan')) %<+% 
       reactive_data() +
       ggplot2::geom_point(
@@ -120,16 +124,21 @@ function(input, output, session) {
       plotly::layout(showlegend=FALSE)
   })
   
-  output$download <- shiny::downloadHandler(
-    filename=function() {'klebref.tsv'},
-    content=function(file) {
-      readr::write_tsv(reactive_data(), file)
+  output$table_download <- shiny::downloadHandler(
+    filename=function(){
+      paste("klebref_", Sys.Date(), ".csv", sep="")
+    },
+    content=function(file){
+      readr::write_csv(reactive_data(), file)
     }
   )
   output$tree_download <- shiny::downloadHandler(
-    filename=function() {'klebref.newick'},
-    content=function(file) {
-      ape::write.tree( ape::drop.tip(TREE, TREE$tip.label[!TREE$tip.label %in% reactive_data()$Accession]), file)
+    filename=function(){
+      paste("klebref_", Sys.Date(), ".newick", sep="")
+    },
+    content=function(file){
+      ape::write.tree(reactive_tree(), file)
     }
+    
   )
 }
