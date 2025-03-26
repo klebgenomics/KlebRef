@@ -1,0 +1,11 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+.DS_Store
+assemblies
+drafts
+figures
+pathogenwatch
+metadata
+KlebRef.Rproj

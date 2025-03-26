@@ -1,0 +1,348 @@
+---
+title: "KlebRef: A Public Genomic Resource of _Klebsiella_ Reference Strains to Aid Experimental Design"
+author: "Thomas D. Stanton, tom.stanton(at)monash.edu"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document: 
+    pandoc_args: ["+RTS", "-K64m", "-RTS", "--self-contained"]
+    keep_md: true
+    toc: true
+    toc_float: true
+    toc_levels: 4
+    theme: lumen
+    output_file: 'index.html'
+  md_document:
+    preserve_yaml: false
+    output_file: 'README.md'
+editor_options: 
+  markdown: 
+    wrap: 200
+---
+
+```{r setup, include=FALSE}
+require(knitr)
+require(tidyverse)
+require(fs)
+require(ggmap)
+require(phangorn)
+require(ape)
+```
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10419967.svg)](https://doi.org/10.5281/zenodo.10419967)
+
+# Introduction
+
+🌍🔬 [KlebRef](https://tomdstanton.shinyapps.io/KlebRef/) 
+is a resource to explore genomic information and associated metadata of 
+_Klebsiella_ reference strains with publicly available genomes. 
+If you found KlebRef useful in your research, please 
+[cite](https://doi.org/10.5281/zenodo.10419967).
+
+Public *Klebsiella* genomes from the following culture collections are included:
+
+-   [The Collection of Type Cultures (NCTC)](https://www.culturecollections.org.uk/)
+-   [The American Type Culture Collection (ATCC)](https://www.atcc.org/)
+-   [Biological and Emerging Infections (BEI) Resources MRSN Diversity Panel](https://www.beiresources.org/)
+-   [KlebPhaCol](https://strain.klebphacol.soton.ac.uk)
+
+📊 **This file contains the code used to prepare the KlebRef data.** 📊
+
+# Fetching the genomes
+
+First, I identified the associated Bioprojects for NCTC3000, the MRSN panel
+and KlebPhaCol, then used the [NCBI Datasets API](https://www.ncbi.nlm.nih.gov/datasets/docs/command-line-start/) to download 
+the genomes and the metadata.
+
+```{bash Fetch NCTC and MRSN genomes, eval=FALSE, include=TRUE}
+datasets download genome accession PRJEB6403 PRJNA717739 --search Klebsiella --assembly-version latest --assembly-source GenBank
+```
+
+```{bash Fetch KlebPhaCol genomes, eval=FALSE, include=TRUE}
+datasets download genome accession PRJNA1123654 PRJNA73191 PRJNA1121092 PRJNA1121093 PRJNA31 PRJNA745534 PRJNA1187231 --search Klebsiella --assembly-version latest --assembly-source GenBank
+```
+
+I then used the [ATCC Genome Portal](https://www.atcc.org/genome-portal)
+Python API to search for and download all the *Klebsiella* genomes and
+associated matadata from the ATCC collection.
+
+```{python Fetch ATCC genomes, eval=FALSE, include=TRUE, python.reticulate=FALSE}
+from genome_portal_api import *
+API_KEY = "YOUR_API_KEY_HERE"  # Replace with your API key
+download_catalogue(api_key=API_KEY, output="atcc_catalogue.pkl")  # Download ATCC catalogue
+# Fuzzy search for Klebsiella strains in the ATCC catalogue
+klebsiella_metadata = {x['product_id']: x for x in search_fuzzy(term="Klebsiella", catalogue_path="atcc_catalogue.pkl")}
+
+# Identify non-Klebsiella strains
+non_klebsiella_metadata = {k: v for k, v in klebsiella_metadata.items() if 'Klebsiella' not in v['taxon_name']}
+for acc in non_klebsiella_metadata.keys():
+    klebsiella_metadata.pop(acc)  # Remove non-Klebsiella strains from Klebsiella metadata
+
+with open('atcc_assembly_urls.txt', 'wt') as f:  # Write the assembly URLs to a file
+    for i in klebsiella_metadata.values():
+        url = download_assembly(api_key=API_KEY, id=i['id'], download_link_only="True", download_assembly="False")
+        f.write(f"{url}\n")
+```
+
+```{bash Download ATCC genomes, eval=FALSE, include=TRUE}
+xargs -P 8 -n 1 curl -O < atcc_assembly_urls.txt
+```
+
+# Fetching the metadata
+
+```{bash Fetch NCBI Metadata, eval=FALSE, include=TRUE}
+datasets summary genome accession PRJEB6403 PRJNA717739 --search Klebsiella --assembly-version latest --assembly-source GenBank --as-json-lines | dataformat tsv genome > metadata/NCTC3000_MRSN_metadata.tsv
+```
+
+```{bash Fetch KlebPhaCol Metadata, eval=FALSE, include=TRUE}
+datasets summary genome accession PRJNA1123654 PRJNA73191 PRJNA1121092 PRJNA1121093 PRJNA31 PRJNA745534 PRJNA1187231 --search Klebsiella --assembly-version latest --assembly-source GenBank --as-json-lines | dataformat tsv genome > metadata/klebphacol_metadata.tsv
+```
+
+```{python Fetch ATCC Metadata, eval=FALSE, include=TRUE, python.reticulate=FALSE}
+def flatten_dict(parent_dict: dict):
+    """Function to recursively flatten a nested dictionary"""
+    flattened = {}  # Create an empty dictionary to store the flattened dictionary
+    for k, v in parent_dict.items():
+        if isinstance(v, dict):  # Recursively flatten dictionaries
+            flattened.update(flatten_dict({f"{k}_{k2}": v2 for k2, v2 in v.items()}))
+        elif isinstance(v, list):  # Join lists into comma separated strings
+            flattened[k] = ','.join(str(i) for i in v)
+        else:
+            flattened[k] = v
+    return flattened
+
+import pandas as pd
+data = {}  # Create an empty dictionary to store the flattened metadata
+for acc, metadata in klebsiella_metadata.items():  # Iterate over the metadata we just downloaded
+    metadata.pop('primary_assembly')  # Remove the primary assembly from the metadata
+    data[acc] = flatten_dict(metadata)  # Flatten the metadata dictionary and add to the data dictionary
+
+df = pd.DataFrame.from_dict(data, orient='index')  # Convert the data dictionary to a Pandas DataFrame
+df.to_csv('atcc_metadata.tsv', sep='\t', index=False)  # Write the DataFrame to a TSV file
+```
+
+# Pathogenwatch Data
+
+All genomic analysis was performed on the 
+[PathogenWatch platform](https://pathogen.watch/').
+
+```{r Load Speciator, eval=FALSE, include=TRUE}
+speciator <- readr::read_csv('pathogenwatch/speciator.csv', show_col_types=FALSE)
+```
+
+```{r Load Kleborate, eval=FALSE, include=TRUE}
+col_spec <- readr::read_csv('pathogenwatch/kleborate_kp.csv', show_col_types=FALSE) |>
+  readr::spec()
+kleborate <- fs::dir_ls('pathogenwatch', glob='*kleborate*') |>
+  purrr::map(~readr::read_csv(.x, show_col_types=FALSE, col_types=col_spec)) |>
+  dplyr::bind_rows() |>
+  readr::write_csv('pathogenwatch/kleborate.csv')
+```
+
+```{r Load Stats, eval=FALSE, include=TRUE}
+col_spec <- readr::read_csv('pathogenwatch/stats (2).csv', show_col_types=FALSE) |>
+  readr::spec()
+stats <- fs::dir_ls('pathogenwatch', glob='*stats*') |>
+  purrr::map(~readr::read_csv(.x, show_col_types=FALSE, col_types=col_spec)) |>
+  dplyr::bind_rows() |>
+  readr::write_csv('pathogenwatch/stats.csv')
+```
+
+```{r Load cgMLST, eval=FALSE, include=TRUE}
+col_spec <- readr::read_csv('pathogenwatch/cgmlst_classification.csv', show_col_types=FALSE) |>
+  readr::spec()
+cgmlst <- fs::dir_ls('pathogenwatch', glob='*cgmlst_classification*') |>
+  purrr::map(~readr::read_csv(.x, show_col_types=FALSE, col_types=col_spec)) |>
+  dplyr::bind_rows() |>
+  readr::write_csv('pathogenwatch/cgmlst_classification.csv')
+```
+
+```{r Load Inctyper, eval=FALSE, include=TRUE}
+col_spec <- readr::read_csv('pathogenwatch/inctyper_kp.csv', show_col_types=FALSE) |>
+  readr::spec()
+inctyper <- fs::dir_ls('pathogenwatch', glob='*inctyper*') |>
+  purrr::map(~readr::read_csv(.x, show_col_types=FALSE, col_types=col_spec)) |>
+  dplyr::bind_rows() |>
+  readr::write_csv('pathogenwatch/inctyper.csv')
+```
+
+```{r Load MLST, eval=FALSE, include=TRUE}
+col_spec <- readr::read_csv('pathogenwatch/mlst-pasteur.csv', show_col_types=FALSE) |>
+  readr::spec()
+mlst <- fs::dir_ls('pathogenwatch', glob='*mlst-*') |>
+  purrr::map(~readr::read_csv(.x, show_col_types=FALSE, col_types=col_spec)) |>
+  dplyr::bind_rows() |>
+  readr::write_csv('pathogenwatch/mlst.csv')
+```
+
+```{r Merge genotyping data, eval=FALSE, include=TRUE}
+genotype_data <- stats |>
+  dplyr::mutate(  # Extract properly formatted NCBI/ATCC accessions to match metadata
+    Version=NULL,  # Drop version column
+    Accession = dplyr::if_else(
+      startsWith(`Genome Name`, "GC"),
+      stringr::str_extract(`Genome Name`, "GC(A|F)_[0-9]+\\.[0-9]"),
+      stringr::str_replace(stringr::str_remove(`Genome Name`, ".*ATCC_"), '_', '-')
+    ), .before = 1
+  ) |>
+  dplyr::left_join(
+    dplyr::select(speciator, 1, 2, 4), by=c("Genome ID", "Genome Name")
+  ) |>
+  dplyr::left_join(
+    dplyr::select(mlst, 1, 2, 4), by=c("Genome ID", "Genome Name")
+  ) |>
+  dplyr::left_join(
+    dplyr::select(cgmlst, 1, 2, 4, 6:8), by=c("Genome ID", "Genome Name")
+  ) |>
+  dplyr::left_join(
+    dplyr::select(kleborate, 1, 2, species, tidyselect::matches(
+      'bactin|chelin|RmpADC|rmpA2|score|mutations|^Bla|aquired|^[KO]_')
+      ), 
+    by=c("Genome ID", "Genome Name")
+  ) |>
+  dplyr::mutate(
+    dplyr::across(c(Sublineage, `Clonal Group`), as.character),
+    ST=dplyr::if_else(stringr::str_length(ST) > 10, "Novel", ST),
+    cgST=dplyr::if_else(stringr::str_length(cgST) > 10, "Novel", cgST),
+    virulence_score=dplyr::case_match(
+      virulence_score, .default='Not tested',
+      0 ~ 'ybt, clb and iuc negative',
+      1 ~ 'ybt only',
+      2 ~ 'clb + ybt (or clb only)',
+      3 ~ 'iuc (without ybt or clb)',
+      4 ~ 'iuc and ybt (without clb)',
+      5 ~ 'iuc, ybt and clb'
+    ),
+    resistance_score=dplyr::case_match(
+      resistance_score, .default='Not tested',
+      0 ~ 'ESBL and Carb negative',
+      1 ~ 'ESBL only',
+      2 ~ 'Carb without colistin',
+      3 ~ 'Carb with colistin'
+    ),
+    dplyr::across(
+      tidyselect::where(is.character), ~dplyr::if_else(is.na(.x), 'Not tested', .x)
+    )
+  ) |>
+  readr::write_csv('genotype_data.csv')
+```
+
+# Metadata processing
+
+Here, we extract the relevant fields from the metadata we fetched.
+
+```{r Load NCBI metadata, eval=FALSE, include=TRUE}
+metadata <- readr::read_tsv(
+    c("metadata/NCTC3000_MRSN_metadata.tsv", "metadata/klebphacol_metadata.tsv"), 
+      show_col_types = FALSE, 
+    name_repair = ~stringr::str_replace_all(.x, "\\s+", "_")
+  ) |> 
+  dplyr::filter(Assembly_Accession %in% genotype_data$Accession) |> 
+  dplyr::select(
+    Accession=Assembly_Accession, 
+    Bioproject=Assembly_BioProject_Accession, 
+    BioSample=Assembly_BioSample_Accession, 
+    name=Assembly_BioSample_Attribute_Name,
+    value=Assembly_BioSample_Attribute_Value,
+  ) |> 
+  dplyr::distinct() |> 
+  tidyr::pivot_wider() |> 
+  dplyr::select(
+    1:3, Strain=strain, Host=host, Isolation_source=isolation_source, 
+    Collection_date=collection_date, Origin=geo_loc_name, lat_lon,
+    Serovar=serovar,
+  ) |> 
+  dplyr::mutate(
+    dplyr::across(dplyr::everything(), ~dplyr::if_else(stringr::str_detect(.x, 'not|N/A'), NA_character_, .x)),
+    Culture_collection=dplyr::case_when(
+      Bioproject == 'PRJEB6403' ~ 'NCTC',
+      startsWith(Strain, 'MRSN') ~ 'BEI Resources',
+      .default='KlebPhaCol'
+    )
+  ) |> 
+  tidyr::separate_wider_delim(
+    lat_lon, ' ', names=c('lat', 'lat_dir', 'lon', 'lon_dir'), too_few="align_start"
+  ) |> 
+  dplyr::mutate(
+    lat=ifelse(lat_dir=='S', as.double(lat) * -1, as.double(lat)), lat_dir=NULL,
+    lon=ifelse(lon_dir=='W', as.double(lon) * -1, as.double(lon)), lon_dir=NULL
+  )
+```
+
+```{r Load ATCC metadata, eval=FALSE, include=TRUE}
+metadata <- readr::read_tsv("metadata/atcc_metadata.tsv", show_col_types = FALSE) |> 
+  dplyr::select(
+    Strain=name, Accession=product_id,
+    Isolation_source=attributes_atcc_metadata_isolation_new_web
+  ) |> 
+  dplyr::mutate(Strain=stringr::str_remove_all(Strain, '[®™]'), Culture_collection='ATCC') |> 
+  dplyr::bind_rows(metadata)
+```
+
+We can use [ggmap](https://github.com/dkahle/ggmap) to generate latitude and 
+longitude codes from geographic locations.
+
+```{r Get remaining geocodes, eval=FALSE, include=TRUE}
+geocodes <- metadata |> 
+  dplyr::filter(is.na(lat), !is.na(Origin)) |> 
+  dplyr::distinct(Origin) |> 
+  ggmap::mutate_geocode(Origin)
+```
+
+```{r Fill geocodes, eval=FALSE, include=TRUE}
+metadata <- metadata |>
+  dplyr::left_join(geocodes, by='Origin', suffix = c('', '.y')) |> 
+  dplyr::mutate(
+    lat=dplyr::coalesce(lat, lat.y), lat.y=NULL,
+    lon=dplyr::coalesce(lon, lon.y), lon.y=NULL,
+    dplyr::across(c(Host, Isolation_source), stringr::str_to_sentence),
+    dplyr::across(dplyr::where(is.character), ~dplyr::if_else(is.na(.x), 'Unknown', .x)),
+    Serovar=dplyr::if_else(
+      Serovar!='Unknown', 
+      paste0('K', stringr::str_extract(Serovar, '[0-9]+')),
+      Serovar
+    )
+  ) |> 
+  readr::write_csv("metadata.csv")
+```
+
+# Combine genotype data and metadata
+
+```{r Combine genotype data and metadata, eval=FALSE, include=TRUE}
+all_data <- dplyr::inner_join(metadata, genotype_data, by="Accession") |> 
+  dplyr::select(!c(Accession, `Genome ID`)) |> 
+  dplyr::select(Accession=`Genome Name`, dplyr::everything()) |> 
+  readr::write_csv('all_data.csv')
+```
+
+# Get distances
+
+We use [mash](https://mash.readthedocs.io/) v2.3 to calculate the pairwise 
+distances between all genomes.
+
+```{bash Run mash, eval=FALSE, include=TRUE}
+mash sketch -p 8 -o genomes.msh -s 100000 -k 21 assemblies/*.fna  # Create a mash sketch
+mash dist genomes.msh genomes.msh -p 8 -t > phylo/mash.dist  # Calculate pairwise distances
+```
+
+# Phylogenetic tree
+
+Then a neighbor-joining tree is calculated using the [BIONJ](https://academic.oup.com/mbe/article/14/7/685/1119804?login=false) algorithm, implemented in the
+[ape](https://rdrr.io/cran/ape/man/bionj.html) R package and exported in Newick format after some cleaning.
+
+```{r Build phylogenetic tree, eval=FALSE, include=TRUE}
+tree <- readr::read_tsv("phylo/mash.dist", col_types='ccd--', col_names=c('query', 'target', 'dist')) |> 
+  dplyr::mutate(dplyr::across(c(1:2), ~fs::path_ext_remove(fs::path_file(.x)))) |> 
+  tidyr::pivot_wider(names_from = 2, values_from = 3) |> 
+  tibble::column_to_rownames('query') |>
+  base::as.matrix() |>
+  ape::bionj()
+tree$edge.length <- base::pmax(tree$edge.length, 0.0)
+tree <- phangorn::midpoint(tree)
+ape::write.tree(tree, "phylo/tree.newick")
+```
+
+```{r Export data to Shiny app, eval=FALSE, include=FALSE}
+DATA <- all_data
+TREE <- tree
+save(DATA, TREE, file='shiny/.Rdata')
+```

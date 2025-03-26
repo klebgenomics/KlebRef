@@ -1,108 +1,67 @@
+---
+title: "KlebRef: A Public Genomic Resource of _Klebsiella_ Reference Strains to Aid Experimental Design"
+author: "Thomas D. Stanton, tom.stanton(at)monash.edu"
+date: "26 March, 2025"
+output:
+  html_document: 
+    pandoc_args: ["+RTS", "-K64m", "-RTS", "--self-contained"]
+    keep_md: true
+    toc: true
+    toc_float: true
+    toc_levels: 4
+    theme: lumen
+    output_file: 'index.html'
+  md_document:
+    preserve_yaml: false
+    output_file: 'README.md'
+editor_options: 
+  markdown: 
+    wrap: 200
+---
+
+
+
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10419967.svg)](https://doi.org/10.5281/zenodo.10419967)
 
 # Introduction
 
-👩‍🔬 The purpose of this resource is to provide a genomic context to *Klebsiella* reference strains commonly used in research to aid laboratory researchers in strain selection for particular
-experiments.
+🌍🔬 [KlebRef](https://tomdstanton.shinyapps.io/KlebRef/) 
+is a resource to explore genomic information and associated metadata of 
+_Klebsiella_ reference strains with publicly available genomes. 
+If you found KlebRef useful in your research, please 
+[cite](https://doi.org/10.5281/zenodo.10419967).
 
-🌍 All of these strains may be purchased from their respective culture collections and all genomes are publicly available.
+Public *Klebsiella* genomes from the following culture collections are included:
 
-🖥️ The results of this analysis can be accessed from the [Microreact](https://microreact.org/project/499JCs427zQcxQMJKg5rQG-genomic-analysis-of-public-klebsiella-reference-strains) project page or directly from this
-repository. This Markdown also contains the code used to perform and reproduce the analysis for yourself!
-
-**Public *Klebsiella* genomes from the following culture collections are included:**
-
--   [The National Collection of Type Cultures (NCTC)](https://www.culturecollections.org.uk/)
+-   [The Collection of Type Cultures (NCTC)](https://www.culturecollections.org.uk/)
 -   [The American Type Culture Collection (ATCC)](https://www.atcc.org/)
 -   [Biological and Emerging Infections (BEI) Resources MRSN Diversity Panel](https://www.beiresources.org/)
+-   [KlebPhaCol](https://strain.klebphacol.soton.ac.uk)
 
-The associated publications of these collections are:
+📊 **This file contains the code used to prepare the KlebRef data.** 📊
 
-1.  Dicks J, Fazal MA, Oliver K, Grayson NE, Turnbull JD, Bane E, Burnett E,\
-    Deheer-Graham A, Holroyd N, Kaushal D, Keane J, Langridge G,\
-    Lomax J, McGregor H, Picton S, Quail M, Singh D, Tracey A, Korlach J,\
-    Russell JE, Alexander S, Parkhill J. NCTC3000: a century of bacterial strain\
-    collecting leads to a rich genomic data resource. Microb Genom. 2023 May;9(5):\
-    mgen000976. doi: [10.1099/mgen.0.000976](https://doi.org/10.1099%2Fmgen.0.000976).\
-    PMID: 37194944; PMCID: PMC10272881.
-2.  Martin MJ, Stribling W, Ong AC, Maybank R, Kwak\
-    YI, Rosado-Mendez JA, Preston LN, Lane KF, Julius M, Jones AR, Hinkle M,\
-    Waterman PE, Lesho EP, Lebreton F, Bennett JW, Mc Gann PT. A panel of diverse\
-    Klebsiella pneumoniae clinical isolates for\
-    research and development. Microb Genom. 2023 May;9(5):mgen000967.\
-    doi: [10.1099/mgen.0.000967](https://doi.org/10.1099%2Fmgen.0.000967).\
-    PMID: 37141116; PMCID: PMC10272860.
+# Fetching the genomes
 
-**Genomic analysis of the genomes includes**:
-
--   🧬 [Kleborate](https://github.com/klebgenomics/Kleborate) for typing, AMR and virulence gene detection.
--   🦠 [Kaptive](https://kaptive.readthedocs.io) for K and O antigen prediction.
--   🌳 Phylogenetic analysis to infer the relationships between the strains.
--   📊 Visualisation of the dataset with [Microreact](https://microreact.org/).
-
-🎉 **All associated metadata has also been included!** 🎉
-
-If you found this resource useful, please consider cite:
-Stanton, T. D., Wyres, K., & Holt, K. (2023). Genomic Analysis of Public Klebsiella Reference Strains (0.0.1) [Data set]. Zenodo. [10.5281/zenodo.1041996](https://doi.org/10.5281/zenodo.1041996).
-
-# Microreact visualisation
-
-The results of this analysis can be accessed from the [Microreact project page](https://microreact.org/project/499JCs427zQcxQMJKg5rQG-genomic-analysis-of-public-klebsiella-reference-strains).
-
-## Interpreting the data
-
-![Microreact screenshot](microreact_screenshot.png)
-
-The Microreact project is laid out in three panels:
-
--   **Tree panel**: Two phylogenetic trees showing the relatedness between all strains and just the KpSC strains.
-
--   **Map panel**: The map panel shows the geographical distribution of the strains if they have associated location metadata.
-
--   **Metadata panel**: A filterable table containing all the metadata associated with the strains.
-
-The values in the strain column represent the names given by the culture collections. These names can be used to request/purchase any strains of interest from the respective collection.
-
-The tree tips are coloured by species and the blocks are coloured by MLST and K-locus where available.
-
-Only the most important columns are shown in the table, however more columns can be selected with the "Columns" dropdown.
-
-We have included data for all *Klebsiella* species, not just *Klebsiella pneumoniae*, but you can view data for species of your choice using the "species" column.
-
-MLST results were generated by the [MLST](https://github.com/tseemann/mlst) tool (MLST column) and [Kleborate](https://github.com/klebgenomics/Kleborate) (ST column). Kleborate currently only types
-KpSC so the MLST column contains results for all *Klebsiella* species.
-
-K- and O- locus typing was performed with [Kaptive 3](https://kaptive.readthedocs.io). Where confidence is low, the locus is marked as "Untypeable". These results should be interpreted with caution!
-
-# Tutorial
-
-## Fetching the genomes
-
-To fetch the genomes, you can either download each one manually 🙅‍♀️ or use the [NCBI Datasets](https://www.ncbi.nlm.nih.gov/datasets/docs/command-line-start/) and [ATCC Genome
-Portal](https://github.com/ATCC-Bioinformatics/genome_portal_api) APIs to fetch them in bulk 🙌.
-
-### NCTC and BEI genomes
-
-First, I identified the associated BioProjects for both collections:
-
--   NCTC 3000 Sequencing project: [PRJEB6403](https://www.ncbi.nlm.nih.gov/bioproject/PRJEB6403).
--   BEI Resources MRSN Diversity Panel: [PRJNA717739](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA717739).
-
-Then, I used the [NCBI Datasets API](https://www.ncbi.nlm.nih.gov/datasets/docs/command-line-start/) to download the genomes from both BioProjects.
+First, I identified the associated Bioprojects for NCTC3000, the MRSN panel
+and KlebPhaCol, then used the [NCBI Datasets API](https://www.ncbi.nlm.nih.gov/datasets/docs/command-line-start/) to download 
+the genomes and the metadata.
 
 
-```bash
-datasets download genome accession PRJEB6403 PRJNA717739 --search Klebsiella --assembly-source GenBank
+``` bash
+datasets download genome accession PRJEB6403 PRJNA717739 --search Klebsiella --assembly-version latest --assembly-source GenBank
 ```
 
-### ATCC genomes
 
-To use the ATCC Genome Portal API, you will need to obtain an API key from the [ATCC Genome Portal](https://www.atcc.org/genome-portal).
+``` bash
+datasets download genome accession PRJNA1123654 PRJNA73191 PRJNA1121092 PRJNA1121093 PRJNA31 PRJNA745534 PRJNA1187231 --search Klebsiella --assembly-version latest --assembly-source GenBank
+```
 
-Then, I used Python to search for and download all the *Klebsiella* genomes from the ATCC collection.
+I then used the [ATCC Genome Portal](https://www.atcc.org/genome-portal)
+Python API to search for and download all the *Klebsiella* genomes and
+associated matadata from the ATCC collection.
 
 
-```python
+``` python
 from genome_portal_api import *
 API_KEY = "YOUR_API_KEY_HERE"  # Replace with your API key
 download_catalogue(api_key=API_KEY, output="atcc_catalogue.pkl")  # Download ATCC catalogue
@@ -120,32 +79,25 @@ with open('atcc_assembly_urls.txt', 'wt') as f:  # Write the assembly URLs to a 
         f.write(f"{url}\n")
 ```
 
-Now you can use `curl` to download all the genomes and parallelize with `xargs`.
 
-
-```bash
+``` bash
 xargs -P 8 -n 1 curl -O < atcc_assembly_urls.txt
 ```
 
-## Fetch Metadata
-
-### NCTC and BEI metadata
-
-I used the [NCBI Datasets API](https://www.ncbi.nlm.nih.gov/datasets/docs/command-line-start/) to download the metadata for all the genomes in the
-[NCTC3000](https://www.ncbi.nlm.nih.gov/bioproject/PRJEB6403) and [BEI](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA717739) BioProjects.
+# Fetching the metadata
 
 
-```bash
-datasets summary genome accession PRJEB6403 PRJNA717739 --search Klebsiella --as-json-lines --assembly-source GenBank | \
-dataformat tsv genome > NCTC3000_BEI_metadata.tsv
+``` bash
+datasets summary genome accession PRJEB6403 PRJNA717739 --search Klebsiella --assembly-version latest --assembly-source GenBank --as-json-lines | dataformat tsv genome > metadata/NCTC3000_MRSN_metadata.tsv
 ```
 
-### ATCC metadata
 
-We can use the same metadata dictionary we created earlier to format the metadata for the ATCC genomes into a TSV file.
+``` bash
+datasets summary genome accession PRJNA1123654 PRJNA73191 PRJNA1121092 PRJNA1121093 PRJNA31 PRJNA745534 PRJNA1187231 --search Klebsiella --assembly-version latest --assembly-source GenBank --as-json-lines | dataformat tsv genome > metadata/klebphacol_metadata.tsv
+```
 
 
-```python
+``` python
 def flatten_dict(parent_dict: dict):
     """Function to recursively flatten a nested dictionary"""
     flattened = {}  # Create an empty dictionary to store the flattened dictionary
@@ -168,179 +120,239 @@ df = pd.DataFrame.from_dict(data, orient='index')  # Convert the data dictionary
 df.to_csv('atcc_metadata.tsv', sep='\t', index=False)  # Write the DataFrame to a TSV file
 ```
 
-## MLST
+# Pathogenwatch Data
 
-We'll use the [MLST](https://github.com/tseemann/mlst) tool to perform multi-locus sequence typing on all the genomes, including *Klebsiella* species that are not part of the *Klebsiella pneumoniae*
-species complex.
+All genomic analysis was performed on the 
+[PathogenWatch platform](https://pathogen.watch/').
 
 
-```bash
-mlst assemblies/*.fna > mlst.tsv
+``` r
+speciator <- readr::read_csv('pathogenwatch/speciator.csv', show_col_types=FALSE)
 ```
 
-Now load and parse the tab-separated results.
 
-
-```r
-mlst <- readr::read_tsv(
-  "mlst.tsv", 
-  col_types=readr::cols_only(Assembly="c", MLST_scheme="c", MLST="c"), 
-  col_names = c("Assembly", 'MLST_scheme', "MLST")) |> 
-  dplyr::mutate(Assembly = fs::path_ext_remove(fs::path_file(Assembly)))
+``` r
+col_spec <- readr::read_csv('pathogenwatch/kleborate_kp.csv', show_col_types=FALSE) |>
+  readr::spec()
+kleborate <- fs::dir_ls('pathogenwatch', glob='*kleborate*') |>
+  purrr::map(~readr::read_csv(.x, show_col_types=FALSE, col_types=col_spec)) |>
+  dplyr::bind_rows() |>
+  readr::write_csv('pathogenwatch/kleborate.csv')
 ```
 
-Now we'll mark all those genomes that are part of the *Klebsiella pneumoniae* species complex.
 
-
-```r
-kpneumoniae <- mlst |> 
-  dplyr::filter(MLST_scheme == "kpneumoniae") |> 
-  dplyr::pull(Assembly)
+``` r
+col_spec <- readr::read_csv('pathogenwatch/stats (2).csv', show_col_types=FALSE) |>
+  readr::spec()
+stats <- fs::dir_ls('pathogenwatch', glob='*stats*') |>
+  purrr::map(~readr::read_csv(.x, show_col_types=FALSE, col_types=col_spec)) |>
+  dplyr::bind_rows() |>
+  readr::write_csv('pathogenwatch/stats.csv')
 ```
 
-## Kleborate
 
-[Kleborate](https://github.com/klebgenomics/Kleborate.git) was run on all the 
-genomes to detect AMR, virulence genes and to perform typing. Details of how to 
-use Kleborate can be found in the [wiki](https://github.com/klebgenomics/Kleborate/wiki).
-
-
-```bash
-kleborate -a assemblies/*.fna --resistance -o reference_klebs_kleborate.txt
+``` r
+col_spec <- readr::read_csv('pathogenwatch/cgmlst_classification.csv', show_col_types=FALSE) |>
+  readr::spec()
+cgmlst <- fs::dir_ls('pathogenwatch', glob='*cgmlst_classification*') |>
+  purrr::map(~readr::read_csv(.x, show_col_types=FALSE, col_types=col_spec)) |>
+  dplyr::bind_rows() |>
+  readr::write_csv('pathogenwatch/cgmlst_classification.csv')
 ```
 
-Now load and parse the tab-separated results.
 
-
-```r
-kleborate <- readr::read_tsv("reference_klebs_kleborate.tsv", show_col_types = FALSE) |>
-  # Drop Kleborate K/O results in favour of full Kaptive results
-  # Rename strain to Assembly to match Kaptive data
-  dplyr::select(!tidyselect::matches("_(locus|type)"), 'Assembly'=strain)
+``` r
+col_spec <- readr::read_csv('pathogenwatch/inctyper_kp.csv', show_col_types=FALSE) |>
+  readr::spec()
+inctyper <- fs::dir_ls('pathogenwatch', glob='*inctyper*') |>
+  purrr::map(~readr::read_csv(.x, show_col_types=FALSE, col_types=col_spec)) |>
+  dplyr::bind_rows() |>
+  readr::write_csv('pathogenwatch/inctyper.csv')
 ```
 
-## Kaptive
 
-Next, we'll use [Kaptive](https://github.com/klebgenomics/Kaptive.git) to 
-perform *in silico* K and O antigen typing. Details 
-of how to use Kaptive can be found in the [wiki](https://kaptive.readthedocs.io).
-
-
-```bash
-kaptive kpsc_k assemblies/*.fna > reference_klebs_kaptive_k.tsv
-kaptive kpsc_o assemblies/*.fna > reference_klebs_kaptive_o.tsv
+``` r
+col_spec <- readr::read_csv('pathogenwatch/mlst-pasteur.csv', show_col_types=FALSE) |>
+  readr::spec()
+mlst <- fs::dir_ls('pathogenwatch', glob='*mlst-*') |>
+  purrr::map(~readr::read_csv(.x, show_col_types=FALSE, col_types=col_spec)) |>
+  dplyr::bind_rows() |>
+  readr::write_csv('pathogenwatch/mlst.csv')
 ```
 
-Now load and parse the tab-separated results.
+
+``` r
+genotype_data <- stats |>
+  dplyr::mutate(  # Extract properly formatted NCBI/ATCC accessions to match metadata
+    Version=NULL,  # Drop version column
+    Accession = dplyr::if_else(
+      startsWith(`Genome Name`, "GC"),
+      stringr::str_extract(`Genome Name`, "GC(A|F)_[0-9]+\\.[0-9]"),
+      stringr::str_replace(stringr::str_remove(`Genome Name`, ".*ATCC_"), '_', '-')
+    ), .before = 1
+  ) |>
+  dplyr::left_join(
+    dplyr::select(speciator, 1, 2, 4), by=c("Genome ID", "Genome Name")
+  ) |>
+  dplyr::left_join(
+    dplyr::select(mlst, 1, 2, 4), by=c("Genome ID", "Genome Name")
+  ) |>
+  dplyr::left_join(
+    dplyr::select(cgmlst, 1, 2, 4, 6:8), by=c("Genome ID", "Genome Name")
+  ) |>
+  dplyr::left_join(
+    dplyr::select(kleborate, 1, 2, species, tidyselect::matches(
+      'bactin|chelin|RmpADC|rmpA2|score|mutations|^Bla|aquired|^[KO]_')
+      ), 
+    by=c("Genome ID", "Genome Name")
+  ) |>
+  dplyr::mutate(
+    dplyr::across(c(Sublineage, `Clonal Group`), as.character),
+    ST=dplyr::if_else(stringr::str_length(ST) > 10, "Novel", ST),
+    cgST=dplyr::if_else(stringr::str_length(cgST) > 10, "Novel", cgST),
+    virulence_score=dplyr::case_match(
+      virulence_score, .default='Not tested',
+      0 ~ 'ybt, clb and iuc negative',
+      1 ~ 'ybt only',
+      2 ~ 'clb + ybt (or clb only)',
+      3 ~ 'iuc (without ybt or clb)',
+      4 ~ 'iuc and ybt (without clb)',
+      5 ~ 'iuc, ybt and clb'
+    ),
+    resistance_score=dplyr::case_match(
+      resistance_score, .default='Not tested',
+      0 ~ 'ESBL and Carb negative',
+      1 ~ 'ESBL only',
+      2 ~ 'Carb without colistin',
+      3 ~ 'Carb with colistin'
+    ),
+    dplyr::across(
+      tidyselect::where(is.character), ~dplyr::if_else(is.na(.x), 'Not tested', .x)
+    )
+  ) |>
+  readr::write_csv('genotype_data.csv')
+```
+
+# Metadata processing
+
+Here, we extract the relevant fields from the metadata we fetched.
 
 
-```r
-kaptive <- dplyr::full_join(
-    readr::read_tsv("reference_klebs_kaptive_k.tsv", show_col_types=FALSE),
-    readr::read_tsv("reference_klebs_kaptive_o.tsv", show_col_types=FALSE), 
-    by="Assembly", suffix = c(" K-locus", " O-locus")
+``` r
+metadata <- readr::read_tsv(
+    c("metadata/NCTC3000_MRSN_metadata.tsv", "metadata/klebphacol_metadata.tsv"), 
+      show_col_types = FALSE, 
+    name_repair = ~stringr::str_replace_all(.x, "\\s+", "_")
   ) |> 
-  dplyr::rename_with(~stringr::str_remove(.x, "Best match locus ")) |> 
+  dplyr::filter(Assembly_Accession %in% genotype_data$Accession) |> 
+  dplyr::select(
+    Accession=Assembly_Accession, 
+    Bioproject=Assembly_BioProject_Accession, 
+    BioSample=Assembly_BioSample_Accession, 
+    name=Assembly_BioSample_Attribute_Name,
+    value=Assembly_BioSample_Attribute_Value,
+  ) |> 
+  dplyr::distinct() |> 
+  tidyr::pivot_wider() |> 
+  dplyr::select(
+    1:3, Strain=strain, Host=host, Isolation_source=isolation_source, 
+    Collection_date=collection_date, Origin=geo_loc_name, lat_lon,
+    Serovar=serovar,
+  ) |> 
   dplyr::mutate(
-    `K-locus` = dplyr::if_else(`Confidence K-locus` == "Untypeable", paste(`K-locus`, "(Untypeable)"), `K-locus`),
-    `O-locus` = dplyr::if_else(`Confidence O-locus` == "Untypeable", paste(`O-locus`, "(Untypeable)"), `O-locus`),
-    `Confidence K-locus` = NULL, `Confidence O-locus` = NULL
+    dplyr::across(dplyr::everything(), ~dplyr::if_else(stringr::str_detect(.x, 'not|N/A'), NA_character_, .x)),
+    Culture_collection=dplyr::case_when(
+      Bioproject == 'PRJEB6403' ~ 'NCTC',
+      startsWith(Strain, 'MRSN') ~ 'BEI Resources',
+      .default='KlebPhaCol'
     )
-```
-
-## Merge analysis
-
-Now we'll merge all our results so far.
-
-
-```r
-data <- dplyr::select(kleborate, 1:9) |>
-  dplyr::left_join(mlst, by="Assembly") |>
-  dplyr::left_join(dplyr::filter(kaptive, Assembly %in% kpneumoniae), by="Assembly") |>
-  dplyr::left_join(dplyr::filter(dplyr::select(kleborate, -2:-9), Assembly %in% kpneumoniae), by="Assembly") |>
-  # Extract properly formatted NCBI/ATCC accessions to match metadata
+  ) |> 
+  tidyr::separate_wider_delim(
+    lat_lon, ' ', names=c('lat', 'lat_dir', 'lon', 'lon_dir'), too_few="align_start"
+  ) |> 
   dplyr::mutate(
-    accession = dplyr::if_else(
-      startsWith(Assembly, "GC"), 
-      stringr::str_extract(Assembly, "GC(A|F)_[0-9]+\\.[0-9]"),
-      stringr::str_replace(stringr::str_remove(Assembly, ".*ATCC_"), '_', '-')
-      ),
-    # Extract ST from Kleborate results if MLST is missing
-    x = stringr::str_extract(ST, "[0-9]+"),
-    MLST = ifelse(!is.na(x) & x != MLST, x, MLST),
-    x=NULL,
-    .before = 1
+    lat=ifelse(lat_dir=='S', as.double(lat) * -1, as.double(lat)), lat_dir=NULL,
+    lon=ifelse(lon_dir=='W', as.double(lon) * -1, as.double(lon)), lon_dir=NULL
+  )
+```
+
+
+``` r
+metadata <- readr::read_tsv("metadata/atcc_metadata.tsv", show_col_types = FALSE) |> 
+  dplyr::select(
+    Strain=name, Accession=product_id,
+    Isolation_source=attributes_atcc_metadata_isolation_new_web
+  ) |> 
+  dplyr::mutate(Strain=stringr::str_remove_all(Strain, '[®™]'), Culture_collection='ATCC') |> 
+  dplyr::bind_rows(metadata)
+```
+
+We can use [ggmap](https://github.com/dkahle/ggmap) to generate latitude and 
+longitude codes from geographic locations.
+
+
+``` r
+geocodes <- metadata |> 
+  dplyr::filter(is.na(lat), !is.na(Origin)) |> 
+  dplyr::distinct(Origin) |> 
+  ggmap::mutate_geocode(Origin)
+```
+
+
+``` r
+metadata <- metadata |>
+  dplyr::left_join(geocodes, by='Origin', suffix = c('', '.y')) |> 
+  dplyr::mutate(
+    lat=dplyr::coalesce(lat, lat.y), lat.y=NULL,
+    lon=dplyr::coalesce(lon, lon.y), lon.y=NULL,
+    dplyr::across(c(Host, Isolation_source), stringr::str_to_sentence),
+    dplyr::across(dplyr::where(is.character), ~dplyr::if_else(is.na(.x), 'Unknown', .x)),
+    Serovar=dplyr::if_else(
+      Serovar!='Unknown', 
+      paste0('K', stringr::str_extract(Serovar, '[0-9]+')),
+      Serovar
     )
+  ) |> 
+  readr::write_csv("metadata.csv")
 ```
 
-Now we can merge all the metadata.
+# Combine genotype data and metadata
 
 
-```r
-metadata <- dplyr::bind_rows(
-      readr::read_tsv(
-        "NCTC3000_BEI_metadata.tsv", show_col_types = FALSE, 
-        name_repair = ~stringr::str_to_lower(stringr::str_replace_all(.x, "\\s+", "_"))
-        ) |> 
-        dplyr::select(accession=current_accession, assembly_biosample_attribute_name, assembly_biosample_attribute_value) |> 
-        dplyr::filter(accession %in% data$accession) |> 
-        dplyr::distinct() |> 
-        tidyr::pivot_wider(id_cols=1, names_from = 2, values_from = 3) |> 
-        dplyr::select(strain, accession, geo_loc_name, serovar),
-      readr::read_tsv("atcc_metadata.tsv", show_col_types = FALSE) |> 
-        dplyr::select(strain=name, accession=product_id)
-    ) |> 
-  dplyr::mutate(geo_loc_name = dplyr::if_else(is.na(geo_loc_name), "", geo_loc_name)) |>
-  ggmap::mutate_geocode(geo_loc_name)
+``` r
+all_data <- dplyr::inner_join(metadata, genotype_data, by="Accession") |> 
+  dplyr::select(!c(Accession, `Genome ID`)) |> 
+  dplyr::select(Accession=`Genome Name`, dplyr::everything()) |> 
+  readr::write_csv('all_data.csv')
 ```
 
-## Writing results
+# Get distances
+
+We use [mash](https://mash.readthedocs.io/) v2.3 to calculate the pairwise 
+distances between all genomes.
 
 
-```r
-dplyr::inner_join(metadata, data, by="accession") |> 
-  readr::write_tsv("data.tsv", na = "")
-```
-
-## Phylogenetic tree
-
-Finally we'll do a quick and dirty phylogenetic inference using pairwise Jaccard distance estimates. This method is less accurate than a proper recombination-free SNP-based phylogeny, but as we have
-genomes from multiple species, this is an appropriate method to use and follows the recommendation of [this paper](https://wellcomeopenresearch.org/articles/3-33).
-
-
-```bash
+``` bash
 mash sketch -p 8 -o genomes.msh -s 100000 -k 21 assemblies/*.fna  # Create a mash sketch
-mash dist genomes.msh genomes.msh -p 8 -t > genomes.dist  # Calculate pairwise distances
+mash dist genomes.msh genomes.msh -p 8 -t > phylo/mash.dist  # Calculate pairwise distances
 ```
+
+# Phylogenetic tree
 
 Then a neighbor-joining tree is calculated using the [BIONJ](https://academic.oup.com/mbe/article/14/7/685/1119804?login=false) algorithm, implemented in the
 [ape](https://rdrr.io/cran/ape/man/bionj.html) R package and exported in Newick format after some cleaning.
 
 
-```r
-tree <- readr::read_tsv("genomes.dist", show_col_types=FALSE) |>
-    tibble::column_to_rownames('#query') |>
-    base::as.matrix() |>
-    ape::bionj()  # neighbour-joining tree using the BIONJ algorithm
+``` r
+tree <- readr::read_tsv("phylo/mash.dist", col_types='ccd--', col_names=c('query', 'target', 'dist')) |> 
+  dplyr::mutate(dplyr::across(c(1:2), ~fs::path_ext_remove(fs::path_file(.x)))) |> 
+  tidyr::pivot_wider(names_from = 2, values_from = 3) |> 
+  tibble::column_to_rownames('query') |>
+  base::as.matrix() |>
+  ape::bionj()
+tree$edge.length <- base::pmax(tree$edge.length, 0.0)
+tree <- phangorn::midpoint(tree)
+ape::write.tree(tree, "phylo/tree.newick")
 ```
 
-We edit the tree to remove the file extension from the tip labels, set any negative branch lengths to zero, and midpoint root the tree.
 
-
-```r
-tree$tip.label <- purrr::map_chr(tree$tip.label, ~fs::path_ext_remove(fs::path_file(.x)))
-tree$edge.length <- base::pmax(tree$edge.length, 0.0)  # set any negative branch lengths to zero
-tree |> 
-  phangorn::midpoint() |>   # midpoint root the tree
-  ape::write.tree("tree.newick")  # write the tree to a file
-```
-
-We'll also create a separate tree just for the *Klebsiella pneumoniae* species complex genomes.
-
-
-```r
-tree |> 
-  ape::drop.tip(tree$tip.label[!tree$tip.label %in% kpneumoniae]) |> 
-  phangorn::midpoint() |>   # midpoint root the tree
-  ape::write.tree("kpsc_tree.newick")  # write the tree to a file
-```
