@@ -1,26 +1,3 @@
----
-title: "KlebRef: A Public Genomic Resource of _Klebsiella_ Reference Strains to Aid Experimental Design"
-author: "Thomas D. Stanton, tom.stanton(at)monash.edu"
-date: "26 March, 2025"
-output:
-  html_document: 
-    pandoc_args: ["+RTS", "-K64m", "-RTS", "--self-contained"]
-    keep_md: true
-    toc: true
-    toc_float: true
-    toc_levels: 4
-    theme: lumen
-    output_file: 'index.html'
-  md_document:
-    preserve_yaml: false
-    output_file: 'README.md'
-editor_options: 
-  markdown: 
-    wrap: 200
----
-
-
-
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10419967.svg)](https://doi.org/10.5281/zenodo.10419967)
 
 # Introduction

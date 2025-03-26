@@ -10,10 +10,8 @@ output:
     toc_float: true
     toc_levels: 4
     theme: lumen
-    output_file: 'index.html'
   md_document:
     preserve_yaml: false
-    output_file: 'README.md'
 editor_options: 
   markdown: 
     wrap: 200
