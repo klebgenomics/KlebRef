@@ -4,7 +4,7 @@ library(shinyWidgets)
 library(htmltools)
 library(plotly)
 library(leaflet)
-# library(shinycssloaders)
+library(shinycssloaders)
 
 theme <- bslib::bs_theme(
   bg="#FFF",
@@ -190,8 +190,8 @@ intro <- shiny::fluidRow(
 map <- shiny::column(
   6,
   shiny::h4('Geographic distribution'),
-  leaflet::leafletOutput('map', height=550),
-    # shinycssloaders::withSpinner(color=SPINNER_COLOR, type=SPINNER_TYPE, size=SPINNER_SIZE),
+  leaflet::leafletOutput('map', height=550) |> 
+    shinycssloaders::withSpinner(color=SPINNER_COLOR, type=SPINNER_TYPE, size=SPINNER_SIZE),
   htmltools::p(
     'This map shows the geographic source of each reference strain if available. 
     Hover over the points to see the strain name.'
@@ -209,8 +209,8 @@ tree <- shiny::column(
       'Culture_collection', 'Bioproject', 'BioSample', 'Host', 'Origin'
     ),
   ),
-  plotly::plotlyOutput('tree'),
-    # shinycssloaders::withSpinner(color=SPINNER_COLOR, type=SPINNER_TYPE, size=SPINNER_SIZE),
+  plotly::plotlyOutput('tree') |> 
+    shinycssloaders::withSpinner(color=SPINNER_COLOR, type=SPINNER_TYPE, size=SPINNER_SIZE),
   htmltools::HTML(
     '<p>This tree shows the genetic relatonship of each reference strain
     based on Jaccard distance calculated by 
@@ -223,7 +223,10 @@ bslib::page_sidebar(
   theme=theme, sidebar=sidebar, title=title, window_title='KlebRef',
   shiny::fluidRow(intro), 
   shiny::fluidRow(tree, map),
-  shiny::fluidRow(DT::dataTableOutput('tbl')),
+  shiny::fluidRow(
+    DT::dataTableOutput('tbl') |> 
+      shinycssloaders::withSpinner(color=SPINNER_COLOR, type=SPINNER_TYPE, size=SPINNER_SIZE)
+  ),
   htmltools::hr(),
   footer
 )

@@ -26,6 +26,6 @@ summary_colname <- function(x) {
 
 # Cosmetic globals -------------------------------------------------------------
 ## CSS Loader Spinner Formatting: https://projects.lukehaas.me/css-loaders/
-SPINNER_TYPE = 8
+SPINNER_TYPE = 7
 SPINNER_COLOR = "#e62e84ff"
-SPINNER_SIZE = 2
+SPINNER_SIZE = .5
